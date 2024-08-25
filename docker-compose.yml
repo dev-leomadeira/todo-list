@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:   
+  postgres:
+    image: postgres:14-alpine
+    container_name: todo-list
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${POSTGRES_PORT}:5432"
