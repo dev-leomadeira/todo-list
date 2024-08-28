@@ -1,14 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import { PapelAtributos, PapelAtributosCriacao } from "../interface/papel.interface";
 import sequelize from "../config/database";
-import Usuario from "./usuario.model";
-
 class Papel extends Model<PapelAtributos, PapelAtributosCriacao> implements PapelAtributos {
     id!: number;
     nome!: string;
-
-    // Define o relacionamento com o modelo Usuario
-    public readonly usuarios?: Usuario[]; // `usuarios` será um array de Usuarios
 }
 
 Papel.init({
