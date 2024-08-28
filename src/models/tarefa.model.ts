@@ -42,9 +42,14 @@ Tarefa.init({
     timestamps: false
 });
 
-// Tarefa.belongsTo(Lista, {
-//     foreignKey: "listaId",
-//     as: "lista"
-// });
+Lista.hasMany(Tarefa, {
+    foreignKey: "listaId",
+    as: "tarefa"
+});
+
+Tarefa.belongsTo(Lista, {
+    foreignKey: "listaId",
+    as: "lista"
+});
 
 export default Tarefa;

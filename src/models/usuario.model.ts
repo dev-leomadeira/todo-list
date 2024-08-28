@@ -2,17 +2,13 @@ import { DataTypes, Model } from "sequelize";
 import { UsuarioAtributos, UsuarioAtributosCriacao } from "../interface/usuario.interface";
 import sequelize from "../config/database";
 import Papel from "./papel.model";
-import Lista from "./lista.model";
-
+// import Lista from "./lista.model";
 class Usuario extends Model<UsuarioAtributos, UsuarioAtributosCriacao> implements UsuarioAtributos {
     id!: number;
     nome!: string;
     email!: string;
     senha!: string;
     papelId!: number;
-
-    // Define o relacionamento com o modelo Papel
-    public readonly papel?: Papel; // `papel` será uma instância de Papel
 }
 
 Usuario.init({
@@ -44,19 +40,15 @@ Usuario.init({
     timestamps: false
 });
 
+// Defina o relacionamento após a definição dos modelos
+Papel.hasMany(Usuario, {
+    foreignKey: "papelId",
+    as: "usuarios"
+});
+
 Usuario.belongsTo(Papel, {
     foreignKey: "papelId",
     as: "papel"
-});
-
-Papel.hasMany(Usuario, { // Um Papel tem muitos Usuarios
-    foreignKey: "papelId",
-    as: "usuarios" // Ajustado para plural, para refletir a relação
-});
-
-Usuario.hasMany(Lista, {
-    foreignKey: "usuarioId",
-    as: "listas" // Ajustado para plural
 });
 
 export default Usuario;

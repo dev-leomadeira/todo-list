@@ -5,7 +5,7 @@ export interface AnuncioAtributos{
     imagemUrl: string,
     scriptAdsense: string,
     ativo: boolean,
-    admin_id: number
+    usuarioId: number
 }
 
 export interface AnuncioAtributosCriacao extends Optional<AnuncioAtributos, "id">{}

@@ -1,13 +1,14 @@
 import { DataTypes, Model } from "sequelize";
-import { AnuncioAtributos, AnuncioAtributosCriacao } from "../interface/anuncio.interface";
+import { AnuncioAtributos, AnuncioAtributosCriacao } from "../interface/anuncio.intereface";
 import sequelize from "../config/database";
+import Usuario from "./usuario.model";
 
 class Anuncio extends Model<AnuncioAtributos, AnuncioAtributosCriacao> implements AnuncioAtributos {
     id!: number;
     imagemUrl!: string;
     scriptAdsense!: string;
     ativo!: boolean;
-    admin_id!: number;
+    usuarioId!: number;
 }
 
 Anuncio.init({
@@ -28,7 +29,7 @@ Anuncio.init({
         type: DataTypes.BOOLEAN,
         allowNull: false
     },
-    admin_id: {
+    usuarioId: {
         type: DataTypes.INTEGER,
         allowNull: false
     }
@@ -38,5 +39,15 @@ Anuncio.init({
     tableName: "anuncio",
     timestamps: false
 })
+
+Usuario.hasMany(Anuncio, {
+    foreignKey: "usuarioId",
+    as: "anuncios"
+});
+
+Anuncio.belongsTo(Usuario, {
+    foreignKey: "usuarioId",
+    as: "usuario"
+});
 
 export default Anuncio

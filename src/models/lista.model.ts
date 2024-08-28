@@ -2,8 +2,6 @@ import { DataTypes, Model } from "sequelize";
 import { ListaAtributoCriacao, ListaAtributos } from "../interface/lista.interface";
 import sequelize from "../config/database";
 import Usuario from "./usuario.model";
-import Tarefa from "./tarefa.model";
-
 class Lista extends Model<ListaAtributos, ListaAtributoCriacao> implements ListaAtributos {
     id!: number;
     nome!: string;
@@ -34,17 +32,17 @@ Lista.init({
     sequelize,
     modelName: "Lista",
     tableName: "lista",
-    timestamps: true
+    timestamps: false
 });
 
-// Lista.belongsTo(Usuario, {
-//     foreignKey: "usuarioId",
-//     as: "usuario"
-// });
+Usuario.hasMany(Lista, {
+    foreignKey: "usuarioId",
+    as: "listas" // Ajustado para plural
+});
 
-// Lista.hasMany(Tarefa, {
-//     foreignKey: "listaId",
-//     as: "tarefa"
-// });
+Lista.belongsTo(Usuario, {
+    foreignKey: "usuarioId",
+    as: "usuario"
+});
 
 export default Lista;
