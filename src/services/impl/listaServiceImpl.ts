@@ -16,11 +16,33 @@ class ListaServiceImpl implements ListaService {
     async buscarListasPorUsuario(usuarioId: number): Promise<Lista[]> {
         return await this.listaRepository.buscarListaPorUsuario(usuarioId);
     }
+
+    async buscarListaPorId(id: number): Promise<Lista | null> {
+        try {
+            const lista = await Lista.findByPk(id);
+            return lista;
+        } catch (error) {
+            throw new Error("Erro ao buscar lista por ID");
+        }
+    }
+
     async atualizarLista(id: number, novoNome: string): Promise<void> {
         await this.listaRepository.atualizarLista(id, novoNome);
     }
+
     async deletarLista(id: number, usuarioId: number): Promise<void> {
-        await this.listaRepository.deletarLista(id, usuarioId);
+        try {
+            const lista = await Lista.findByPk(id);
+            if (!lista) {
+                throw new Error("Lista não encontrada");
+            }
+            if (lista.usuarioId !== usuarioId) {
+                throw new Error("Você não tem permissão para deletar esta lista");
+            }
+            await lista.destroy();
+        } catch (error) {
+            throw new Error("Erro ao deletar lista");
+        }
     }
 }
 
