@@ -21,7 +21,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     // Obtém o token do cabeçalho Authorization
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'Token nao encontrado' });
+        return res.status(401).json({ message: 'Token não encontrado' });
     }
 
     const token = authHeader.split(' ')[1];
@@ -32,6 +32,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         req.user = decoded;  // Adiciona o payload decodificado ao objeto request
         next();  // Passa o controle para o próximo middleware ou rota
     } catch (error) {
-        res.status(401).json({ message: 'Validoção do token falhou' });
+        res.status(401).json({ message: 'Validação do token falhou' });
     }
 };
