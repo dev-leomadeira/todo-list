@@ -7,6 +7,7 @@ import helloWorldRoutes from '../routes/helloWorldRoutes';
 import Lista from "../models/lista.model";
 import Tarefa from '../models/tarefa.model';
 import Anuncio from '../models/anuncio.model';
+import listaRoutes from '../routes/listaRoutes';
 
 Lista
 Tarefa
@@ -25,6 +26,9 @@ app.use('/auth', authRoutes);
 
 // Rotas protegidas
 app.use('/protected', protectedRoutes);
+
+// Adiciona as rotas de listas ao app
+app.use("/api", listaRoutes);
 
 // Middleware de tratamento de erros
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
