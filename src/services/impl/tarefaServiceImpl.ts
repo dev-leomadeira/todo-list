@@ -21,3 +21,5 @@ class TarefaServiceImpl implements TarefaService{
         await this.tarefaRepository.deletarTarefa(id, listaId);
     }
 }
+
+export default TarefaServiceImpl;

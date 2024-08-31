@@ -2,12 +2,11 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import sequelize from '../config/database';
 import authRoutes from '../routes/authRoutes';
-import protectedRoutes from '../routes/protectedRoutes';
-import helloWorldRoutes from '../routes/helloWorldRoutes';
 import Lista from "../models/lista.model";
 import Tarefa from '../models/tarefa.model';
 import Anuncio from '../models/anuncio.model';
 import listaRoutes from '../routes/listaRoutes';
+import tarefaRoutes from '../routes/tarefaRouter';
 
 Lista
 Tarefa
@@ -18,17 +17,14 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
-//Rota inicial da aplicação [hello world]
-app.use('/', helloWorldRoutes);
-
 // Rotas de autenticação
 app.use('/auth', authRoutes);
 
-// Rotas protegidas
-app.use('/protected', protectedRoutes);
-
 // Adiciona as rotas de listas ao app
 app.use("/api", listaRoutes);
+
+// Adiciona as rotas de listas ao app
+app.use("/api", tarefaRoutes);
 
 // Middleware de tratamento de erros
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
