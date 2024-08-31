@@ -1,22 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
-
-// Valida os dados de entrada
-const validateRegisterInput = (req: Request, res: Response, next: NextFunction) => {
-    const { nome, email, senha } = req.body;
-    if (!nome || !email || !senha) {
-        return res.status(400).json({ message: "Dados de entrada inválidos" });
-    }
-    next();
-};
-
-const validateLoginInput = (req: Request, res: Response, next: NextFunction) => {
-    const { email, senha } = req.body;
-    if (!email || !senha) {
-        return res.status(400).json({ message: "Dados de entrada inválidos" });
-    }
-    next();
-};
 
 export namespace AuthController {
     // Registra um novo usuário
@@ -43,6 +26,3 @@ export namespace AuthController {
         }
     };
 }
-
-// Exporta os validadores para serem usados nas rotas
-export { validateRegisterInput, validateLoginInput };
