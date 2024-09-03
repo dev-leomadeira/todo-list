@@ -7,6 +7,7 @@ import Tarefa from '../models/tarefa.model';
 import Anuncio from '../models/anuncio.model';
 import listaRoutes from '../routes/listaRoutes';
 import tarefaRoutes from '../routes/tarefaRouter';
+import usuarioRouter from '../routes/usuarioRouter';
 
 Lista
 Tarefa
@@ -17,14 +18,11 @@ const port = process.env.PORT;
 
 app.use(bodyParser.json());
 
-// Rotas de autenticação
+// Rotas
 app.use('/auth', authRoutes);
-
-// Adiciona as rotas de listas ao app
 app.use("/api", listaRoutes);
-
-// Adiciona as rotas de listas ao app
 app.use("/api", tarefaRoutes);
+app.use("/api", usuarioRouter);
 
 // Middleware de tratamento de erros
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -32,6 +30,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
     res.status(500).json({ message: 'Algo deu errado!' });
 });
 
+// Conecta ao banco de dados e inicia o servidor
 sequelize.sync()
     .then(() => {
         console.log('Banco de dados conectado com sucesso!');
