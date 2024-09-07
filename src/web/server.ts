@@ -1,4 +1,5 @@
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 import sequelize from '../config/database';
 import authRoutes from '../routes/authRoutes';
@@ -8,6 +9,7 @@ import Anuncio from '../models/anuncio.model';
 import listaRoutes from '../routes/listaRoutes';
 import tarefaRoutes from '../routes/tarefaRouter';
 import usuarioRouter from '../routes/usuarioRouter';
+import swaggerDocument from '../swagger/swagger.json'; // Importando o arquivo JSON
 
 Lista
 Tarefa
@@ -17,6 +19,9 @@ const app = express();
 const port = process.env.PORT;
 
 app.use(bodyParser.json());
+
+// Configurando o Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Rotas
 app.use('/auth', authRoutes);
