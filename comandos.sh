@@ -10,4 +10,10 @@ npx tsc --init
 npm install --save-dev jest supertest ts-jest @types/jest @types/supertest
 npm install --save-dev @testing-library/jest-dom
 
+#Instalar Swagger
+npm i --save-dev @types/swagger-ui-express
+
+#Iniciar projeto
+npm start
+
 npx ts-node src/scripts/init-db.ts // inicializa o banco de dados
