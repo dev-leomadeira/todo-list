@@ -1,0 +1,673 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "API - Todo List",
+    "description": "Esta API oferece funcionalidades para o gerenciamento de listas de tarefas, incluindo autenticação de usuários, criação e gerenciamento de listas e tarefas, e gerenciamento de perfis de usuários. É uma solução ideal para aplicações que precisam de um sistema de tarefas e gerenciamento de usuários com controle de acesso baseado em roles(papeis).",
+    "contact": {
+      "name": "Leonardo Madeira",
+      "url": "https://github.com/devleo-m"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de desenvolvimento - Testes"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Login": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "nome": { "type": "string" },
+          "email": { "type": "string" },
+          "papelId": { "type": "integer" }
+        },
+        "required": ["nome", "email"],
+        "token": { "type": "string" }
+      },
+      "Lista": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "nome": { "type": "string" },
+          "usuarioId": { "type": "integer" }
+        },
+        "required": ["nome"]
+      },
+      "Tarefa": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "descricao": { "type": "string" },
+          "concluida": { "type": "boolean" },
+          "dataCriacao": { "type": "string" },
+          "listaId": { "type": "integer" }
+        },
+        "required": ["descricao"]
+      },
+      "Usuario": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "nome": { "type": "string" },
+          "email": { "type": "string" },
+          "senha": { "type": "string" },
+          "papelId": { "type": "integer" }
+        },
+        "required": ["email", "senha"]
+      }
+    }
+  },
+  "paths": {
+    "/auth/logar": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Login de usuário",
+        "description": "Autentica um usuário existente com email e senha.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "admin@gmail.com"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "root"
+                  }
+                },
+                "required": ["email", "senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login bem-sucedido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "$ref": "#/components/schemas/Login"
+                    }
+                  },
+                  "required": ["user", "token"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/auth/registrar": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Cadastro de novo usuário",
+        "description": "Permite que um novo usuário crie uma conta com email e senha.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "usuario@gmail.com"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "senhaSegura"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "example": "Nome do Usuário"
+                  }
+                },
+                "required": ["email", "senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "nome": { "type": "string" },
+                        "email": { "type": "string" },
+                        "senha": { "type": "string" },
+                        "papelId": { "type": "integer" }
+                      },
+                      "required": ["id", "nome", "email", "papelId"]
+                    }
+                  },
+                  "required": ["user"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/listas": {
+      "post": {
+        "tags": ["Lista"],
+        "summary": "Cria uma nova lista de tarefas",
+        "description": "Cria uma nova lista de tarefas para o usuário autenticado.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nome": {
+                    "type": "string",
+                    "example": "Nova Lista de Tarefas"
+                  }
+                },
+                "required": ["nome"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Lista criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Lista"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/listas/usuario": {
+      "get": {
+        "tags": ["Lista"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca todas as listas do usuário autenticado",
+        "description": "Recupera todas as listas de tarefas do usuário autenticado.",
+        "responses": {
+          "200": {
+            "description": "Listas recuperadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/Lista"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/listas/{id}": {
+      "put": {
+        "tags": ["Lista"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Atualiza uma lista de tarefas",
+        "description": "Atualiza o nome de uma lista de tarefas existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "novoNome": {
+                    "type": "string",
+                    "example": "Novo Nome da Lista de Tarefas"
+                  }
+                },
+                "required": ["novoNome"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Lista atualizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Lista"
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Lista"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Deleta uma lista de tarefas",
+        "description": "Deleta uma lista de tarefas existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Lista deletada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Lista"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/tarefas": {
+      "post": {
+        "tags": ["Tarefa"],
+        "summary": "Cria uma nova tarefa em uma lista",
+        "description": "Cria uma nova tarefa em uma lista para o usuário autenticado.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "descricao": {
+                    "type": "string",
+                    "example": "Nova Tarefa"
+                  },
+                  "listaId": {
+                    "type": "integer",
+                    "example": 1
+                  }
+                },
+                "required": ["descricao", "listaId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tarefa criada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Tarefa"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/tarefas/lista/{listaId}": {
+      "get": {
+        "tags": ["Tarefa"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca todas as tarefas em uma lista do usuário",
+        "description": "Recupera todas as tarefas de uma lista do usuário autenticado.",
+        "parameters": [
+          {
+            "name": "listaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tarefas recuperadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/Lista"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/tarefas/{id}": {
+      "put": {
+        "tags": ["Tarefa"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Atualiza uma tarefa de uma lista",
+        "description": "Atualiza uma tarefa existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "descricao": {
+                    "type": "string",
+                    "example": "Nova Tarefa"
+                  },
+                  "concluida": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                },
+                "required": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Tarefa atualizada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Tarefa"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/tarefas/{id}/lista/{listaId}": {
+      "delete": {
+        "tags": ["Tarefa"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Deleta uma tarefa de uma lista",
+        "description": "Deleta uma tarefa de uma lista existente.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "listaId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Tarefa deletada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Tarefa"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/usuarios": {
+      "post": {
+        "tags": ["Usuario"],
+        "summary": "Apenas admin podem criar um usuário por esse endpoint",
+        "description": "Apenas admin podem criar um usuário por esse endpoint",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "beltrano@gmail.com"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "root"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "example": "Beltrano da Silva"
+                  }
+                },
+                "required": ["email", "senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "get": {
+        "tags": ["Usuario"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca todos os usuários",
+        "description": "Recupera todos os usuários existentes.",
+        "responses": {
+          "200": {
+            "description": "Usuarios recuperados com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/usuarios/{id}": {
+      "get": {
+        "tags": ["Usuario"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca um usuário pelo id",
+        "description": "Recupera um usuário pelo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuario recuperado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "put": {
+        "tags": ["Usuario"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Atualiza um usuário pelo id",
+        "description": "Atualiza um usuário pelo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "beltrano_update@gmail.com"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "example": "Beltrano da Silva"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "root"
+                  },
+                  "papelId": {
+                    "type": "integer",
+                    "example": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Usuario atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Usuario"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Deleta um usuário pelo id",
+        "description": "Deleta um usuário pelo id.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Usuario deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
