@@ -13,15 +13,15 @@ describe("Teste de rotas de autenticação", () => {
     //     const response = await request(app)
     //         .post("/auth/registrar")
     //         .send({
-    //             nome: "Fulano de Tal",
-    //             email: "fulano99@gmail.com",
+    //             nome: "Fulano",
+    //             email: "fulano@gmail.com",
     //             senha: "root",
     //         });
 
     //     expect(response.status).toBe(201);
     //     expect(response.body).toHaveProperty("id");
-    //     expect(response.body).toHaveProperty("nome", "Fulano de Tal");
-    //     expect(response.body).toHaveProperty("email", "fulano99@gmail.com");
+    //     expect(response.body).toHaveProperty("nome", "Fulano");
+    //     expect(response.body).toHaveProperty("email", "fulano@gmail.com");
     //     expect(response.body).toHaveProperty("papelId", 2);
     // });
 
