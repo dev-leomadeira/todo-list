@@ -56,7 +56,7 @@ export namespace ListaController {
             }
     
             await listaService.atualizarLista(id, novoNome);
-            return res.status(204).json({ message: `Lista ${id} atualizada com sucesso!` });
+            return res.status(204).send();
         } catch (error) {
             return res.status(500).json({ message: "Erro ao atualizar lista", error });
         }
