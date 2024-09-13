@@ -7,23 +7,24 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/auth', authRouter);
 
+let count = 1001;
+
 describe("Teste de rotas de autenticação", () => {
 
-    // test("Criando novo usuario", async () => {
-    //     const response = await request(app)
-    //         .post("/auth/registrar")
-    //         .send({
-    //             nome: "Fulano",
-    //             email: "fulano@gmail.com",
-    //             senha: "root",
-    //         });
+    test("Criando novo usuario", async () => {
+        const response = await request(app)
+            .post("/auth/registrar")
+            .send({
+                nome: "Fulano",
+                email: `fulano${count}@gmail.com`,
+                senha: "root",
+            });
 
-    //     expect(response.status).toBe(201);
-    //     expect(response.body).toHaveProperty("id");
-    //     expect(response.body).toHaveProperty("nome", "Fulano");
-    //     expect(response.body).toHaveProperty("email", "fulano@gmail.com");
-    //     expect(response.body).toHaveProperty("papelId", 2);
-    // });
+        expect(response.status).toBe(201);
+        expect(response.body).toHaveProperty("nome", "Fulano");
+        expect(response.body).toHaveProperty("email", `fulano${count}@gmail.com`);
+        expect(response.body).toHaveProperty("papelId", 2);
+    });
 
     test("Login de usuário existente", async () => {
        const response = await request(app)

@@ -24,6 +24,10 @@ export namespace UsuarioController {
 
     export const buscarUsuarioPorId = async (req: Request, res: Response): Promise<Response> => {
         try {
+            const usuarioAutenticado = req.user;
+            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
+                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
+            }
             const id = parseInt(req.params.id, 10);
             const usuario = await usuarioService.buscarUsuarioPorId(id);
             if (!usuario) {
@@ -37,6 +41,10 @@ export namespace UsuarioController {
 
     export const buscarTodosUsuarios = async (req: Request, res: Response): Promise<Response> => {
         try {
+            const usuarioAutenticado = req.user;
+            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
+                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
+            }
             const usuarios = await usuarioService.buscarTodosUsuarios();
             return res.status(200).json(usuarios);
         } catch (error) {
@@ -44,13 +52,13 @@ export namespace UsuarioController {
         }
     };
 
-    
-    
-    
-    
-
     export const atualizarUsuario = async (req: Request, res: Response): Promise<Response> => {
         try {
+            const usuarioAutenticado = req.user;
+            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
+                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
+            }
+
             const id = parseInt(req.params.id, 10);
             const dadosAtualizados = req.body;
             const usuarioAtualizado = await usuarioService.atualizarUsuario(id, dadosAtualizados);
@@ -65,6 +73,11 @@ export namespace UsuarioController {
 
     export const deletarUsuario = async (req: Request, res: Response): Promise<Response> => {
         try {
+            const usuarioAutenticado = req.user;
+            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
+                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
+            }
+            
             const id = parseInt(req.params.id, 10);
             await usuarioService.deletarUsuario(id);
             return res.status(204).send();

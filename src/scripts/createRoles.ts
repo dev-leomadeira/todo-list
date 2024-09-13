@@ -32,5 +32,16 @@ async function createReaderRole() {
     }
 }
 
-createAdminRole();
-createReaderRole();
+const createAll = async () => {
+    if (!!createAdminRole) {
+        await createAdminRole();
+        console.log('1 - Role ADMIN criado com sucesso.');
+    } 
+
+    if (!!createReaderRole){
+        await createReaderRole();
+        console.log('2 - Role CLIENTE criado com sucesso.');
+    }
+}
+
+createAll();

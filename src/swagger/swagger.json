@@ -485,9 +485,9 @@
 
     "/api/usuarios": {
       "post": {
-        "tags": ["Usuario"],
-        "summary": "Apenas admin podem criar um usuário por esse endpoint",
-        "description": "Apenas admin podem criar um usuário por esse endpoint",
+        "tags": ["Usuario - Admin"],
+        "summary": "criar um usuário por esse endpoint",
+        "description": "criar um usuário por esse endpoint",
         "security": [{ "bearerAuth": [] }],
         "requestBody": {
           "required": true,
@@ -530,7 +530,7 @@
       },
 
       "get": {
-        "tags": ["Usuario"],
+        "tags": ["Usuario - Admin"],
         "security": [{ "bearerAuth": [] }],
         "summary": "Busca todos os usuários",
         "description": "Recupera todos os usuários existentes.",
@@ -552,7 +552,7 @@
 
     "/api/usuarios/{id}": {
       "get": {
-        "tags": ["Usuario"],
+        "tags": ["Usuario - Admin"],
         "security": [{ "bearerAuth": [] }],
         "summary": "Busca um usuário pelo id",
         "description": "Recupera um usuário pelo id.",
@@ -582,7 +582,7 @@
       },
 
       "put": {
-        "tags": ["Usuario"],
+        "tags": ["Usuario - Admin"],
         "security": [{ "bearerAuth": [] }],
         "summary": "Atualiza um usuário pelo id",
         "description": "Atualiza um usuário pelo id.",
@@ -640,7 +640,7 @@
       },
 
       "delete": {
-        "tags": ["Usuario"],
+        "tags": ["Usuario - Admin"],
         "security": [{ "bearerAuth": [] }],
         "summary": "Deleta um usuário pelo id",
         "description": "Deleta um usuário pelo id.",
@@ -665,6 +665,86 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+
+    "/api/usuario/conta": {
+      "get": {
+        "tags": ["Conta - Usuario"],
+        "summary": "Visualiza a conta do usuário autenticado",
+        "description": "Imprimir as informações da conta do usuário autenticado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conta do usuário impressa com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Conta - Usuario"],
+        "summary": "Atualiza a conta do usuário autenticado",
+        "description": "Atualiza as informações da conta do usuário autenticado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "example": "usuario_atualizado@example.com"
+                  },
+                  "nome": {
+                    "type": "string",
+                    "example": "Usuário Atualizado"
+                  },
+                  "senha": {
+                    "type": "string",
+                    "example": "nova_senha123"
+                  }
+                },
+                "required": ["email", "nome"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Conta do usuário atualizada com sucesso"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Conta - Usuario"],
+        "summary": "Deleta a conta do usuário autenticado",
+        "description": "Deleta a conta do usuário autenticado.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Conta do usuário deletada com sucesso"
           }
         }
       }
