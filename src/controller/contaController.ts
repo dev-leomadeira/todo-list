@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import ContaServiceImpl from "../services/impl/contaServiceImpl";
+import bcrypt from 'bcryptjs';
+
 
 const contaService = new ContaServiceImpl();
 
@@ -46,6 +48,11 @@ export namespace ContaController {
 
             // Dados atualizados recebidos no corpo da requisição
             const dadosAtualizados = req.body;
+
+            //import bcrypt from 'bcryptjs';
+            //adicionar bcrypt na senha:
+            const hash = bcrypt.hashSync(dadosAtualizados.senha, 10);
+            dadosAtualizados.senha = hash;
 
             // Atualiza o usuário
             const usuarioAtualizado = await contaService.atualizarUsuario(usuarioId, dadosAtualizados);
