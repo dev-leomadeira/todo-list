@@ -24,6 +24,7 @@ const getToken = async () => {
       throw new Error('Erro ao realizar login');
     }
   }
+
   return token;
 };
 
