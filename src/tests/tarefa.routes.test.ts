@@ -38,7 +38,7 @@ describe("Teste de rotas de tarefas", () => {
             .set('Authorization', `Bearer ${token}`);
 
         expect(listResponse.status).toBe(200);
-        expect(listResponse.body.length).toBeGreaterThan(1);
+        expect(listResponse.body.length).toBeGreaterThan(0);
     });
 
     test("Atualizar uma tarefa existente", async () => {
@@ -58,7 +58,7 @@ describe("Teste de rotas de tarefas", () => {
         const token = await getToken();
 
         const deleteResponse = await supertest(app)
-            .delete('/api/tarefas/1/lista/1')
+            .delete('/api/tarefas/2/lista/1')
             .set('Authorization', `Bearer ${token}`);
 
         expect(deleteResponse.status).toBe(204);

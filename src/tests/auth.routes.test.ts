@@ -1,4 +1,4 @@
-import request from 'supertest';
+import supertest from 'supertest';
 import express from 'express';
 import bodyParser from 'body-parser';
 import authRouter from '../routes/authRoutes';
@@ -7,12 +7,12 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/auth', authRouter);
 
-let count = 1001;
+let count = 1;
 
 describe("Teste de rotas de autenticação", () => {
 
     test("Criando novo usuario", async () => {
-        const response = await request(app)
+        const response = await supertest(app)
             .post("/auth/registrar")
             .send({
                 nome: "Fulano",
@@ -27,7 +27,7 @@ describe("Teste de rotas de autenticação", () => {
     });
 
     test("Login de usuário existente", async () => {
-       const response = await request(app)
+       const response = await supertest(app)
             .post("/auth/logar")
             .send({
                 email: "admin@gmail.com",
