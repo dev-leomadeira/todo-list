@@ -9,7 +9,8 @@ import Anuncio from '../models/anuncio.model';
 import listaRoutes from '../routes/listaRoutes';
 import tarefaRoutes from '../routes/tarefaRouter';
 import usuarioRouter from '../routes/usuarioRouter';
-import swaggerDocument from '../swagger/swagger.json'; // Importando o arquivo JSON
+import swaggerDocument from '../swagger/swagger.json';
+import contaRouter from '../routes/contaRouter';
 
 Lista
 Tarefa
@@ -28,6 +29,8 @@ app.use('/auth', authRoutes);
 app.use("/api", listaRoutes);
 app.use("/api", tarefaRoutes);
 app.use("/api", usuarioRouter);
+app.use("/api", contaRouter);
+
 
 // Middleware de tratamento de erros
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
