@@ -21,7 +21,7 @@ describe("Teste de rotas de tarefas", () => {
             .set('Authorization', `Bearer ${token}`)
             .send({
                 descricao: "Tarefa de teste - jest",
-                listaId: 2
+                listaId: 1
             });
         
         expect(createResponse.status).toBe(201);
@@ -34,7 +34,7 @@ describe("Teste de rotas de tarefas", () => {
         const token = await getToken();
 
         const listResponse = await supertest(app)
-            .get('/api/tarefas/lista/2')
+            .get('/api/tarefas/lista/1')
             .set('Authorization', `Bearer ${token}`);
 
         expect(listResponse.status).toBe(200);
@@ -45,7 +45,7 @@ describe("Teste de rotas de tarefas", () => {
         const token = await getToken();
 
         const updateResponse = await supertest(app)
-            .put('/api/tarefas/2')
+            .put('/api/tarefas/1')
             .set('Authorization', `Bearer ${token}`)
             .send({
                 concluida: true
@@ -58,7 +58,7 @@ describe("Teste de rotas de tarefas", () => {
         const token = await getToken();
 
         const deleteResponse = await supertest(app)
-            .delete('/api/tarefas/1/lista/2')
+            .delete('/api/tarefas/1/lista/1')
             .set('Authorization', `Bearer ${token}`);
 
         expect(deleteResponse.status).toBe(204);

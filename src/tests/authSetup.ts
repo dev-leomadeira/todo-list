@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/auth', authRouter);
 
-let token: string;
+let token: string; 
 
 const getToken = async () => {
   if (!token) {
@@ -26,5 +26,9 @@ const getToken = async () => {
   }
   return token;
 };
+
+if (!!getToken()) {
+  console.log(`Usuario logado: ${getToken()}`);
+}
 
 export { getToken };
