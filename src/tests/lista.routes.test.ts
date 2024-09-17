@@ -1,62 +1,70 @@
-import request from 'supertest';
-import express from 'express';
-import bodyParser from 'body-parser';
-import authRouter from '../routes/authRoutes'; 
-import listaRouter from '../routes/listaRoutes';
-import { getToken } from './authSetup';
+import express from "express";
+import bodyParser from "body-parser";
+import authRouter from "../routes/authRoutes";
+import listaRouter from "../routes/listaRoutes";
+import { getToken } from "./authSetup";
+import supertest from "supertest";
 
 const app = express();
 app.use(bodyParser.json());
-app.use('/auth', authRouter);
-app.use('/api', listaRouter);
+app.use("/auth", authRouter);
+app.use("/api", listaRouter);
 
-describe('Testar rotas e CRUD de listas', () => {
-
-  test('Criar uma nova lista com sucesso', async () => {
+describe("Testar rotas e CRUD de listas", () => {
+  test("Criar uma nova lista com sucesso", async () => {
     const token = await getToken();
+    const timestamp = new Date().getTime();
+    const list = `Lista de Teste ${timestamp}`;
 
     // Criar nova lista
-    const createResponse = await request(app)
-      .post('/api/listas')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ nome: 'Lista de Teste' });
+    const createResponse = await supertest(app)
+      .post("/api/listas")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ nome: list });
 
     expect(createResponse.status).toBe(201);
-    expect(createResponse.body).toHaveProperty('id');
-    expect(createResponse.body.nome).toBe('Lista de Teste');
+    expect(createResponse.body).toHaveProperty("id");
+    expect(createResponse.body.nome).toBe(list);
   });
 
-  test('Listar todas as listas de um usuário', async () => {
+  test("Listar todas as listas de um usuário", async () => {
     const token = await getToken();
 
     // Listar todas as listas
-    const listResponse = await request(app)
-      .get('/api/listas/usuario')
-      .set('Authorization', `Bearer ${token}`);
+    const listResponse = await supertest(app)
+      .get("/api/listas/usuario")
+      .set("Authorization", `Bearer ${token}`);
 
     expect(listResponse.status).toBe(200);
   });
 
-  test('Atualizar uma lista existente', async ()=> {
+  test("Atualizar uma lista existente", async () => {
     const token = await getToken();
 
-    // Atualizar uma lista existente
-    const updateResponse = await request(app)
-      .put('/api/listas/1')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ nome: 'Lista Atualizada' });
+    const updateResponse = await supertest(app)
+      .put("/api/listas/1")
+      .set("Authorization", `Bearer ${token}`)
+      .send({ nome: "Lista Atualizada" });
 
     expect(updateResponse.status).toBe(204);
   });
 
-  test('Deletar uma lista', async () => {
+  test("Deletar uma lista", async () => {
     const token = await getToken();
 
-    // Deletar uma lista existente por ID - 6
-    const response = await request(app)
-      .delete('/api/listas/2')
-      .set('Authorization', `Bearer ${token}`);
+    const createResponse = await supertest(app) // Cria uma lista para garantir que a lista existe antes de tentar deletar
+      .post("/api/listas")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        nome: "Lista para deletar",
+      });
 
-    expect(response.status).toBe(204);
+    const listaId = createResponse.body.id; // Obtém o ID da lista criada
+
+    const deleteResponse = await supertest(app)
+      .delete(`/api/listas/${listaId}`)
+      .set("Authorization", `Bearer ${token}`);
+
+    expect(deleteResponse.status).toBe(204);
   });
 });
