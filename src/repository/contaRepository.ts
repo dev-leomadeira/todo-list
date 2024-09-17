@@ -19,4 +19,4 @@ class ContaRepository {
     }
 }
 
-export default new ContaRepository();
+export default ContaRepository;
