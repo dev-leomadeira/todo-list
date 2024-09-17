@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { AuthService } from '../services/authService';
 
 export namespace AuthController {
-    // Registra um novo usuário
     export const register = async (req: Request, res: Response) => {
         try {
             const { nome, email, senha } = req.body;
@@ -14,7 +13,6 @@ export namespace AuthController {
         }
     };
 
-    // Realiza o login do usuário
     export const login = async (req: Request, res: Response) => {
         try {
             const { email, senha } = req.body;

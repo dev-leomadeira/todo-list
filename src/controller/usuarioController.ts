@@ -1,38 +1,24 @@
 import { Request, Response } from "express";
 import UsuarioServiceImpl from "../services/impl/usuarioServiceImpl";
+import { UsuarioAtributosCriacao } from "../interface/usuario.interface";
 
 const usuarioService = new UsuarioServiceImpl();
 
 export namespace UsuarioController {
     export const criarUsuario = async (req: Request, res: Response) => {
         try {
-            const usuarioAutenticado = req.user;
-            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
-                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem criar usuários." });
-            }
-  
-            const { nome, email, senha } = req.body;
-
-            const usuario = await usuarioService.criarUsuario({ nome, email, senha, papelId: 2 });
- 
-            res.status(201).json(usuario);
+            const dadosUsuario: UsuarioAtributosCriacao = req.body;
+            const usuario = await usuarioService.criarUsuario(dadosUsuario);
+            return res.status(201).json(usuario);
         } catch (error) {
-            console.error('Erro ao criar usuário:', error);
-            res.status(500).json({ message: "Erro interno ao criar usuário" });
+            return res.status(500).json({ message: "Erro interno ao criar usuário", error });
         }
     };
 
     export const buscarUsuarioPorId = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const usuarioAutenticado = req.user;
-            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
-                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
-            }
             const id = parseInt(req.params.id, 10);
             const usuario = await usuarioService.buscarUsuarioPorId(id);
-            if (!usuario) {
-                return res.status(404).json({ message: "Usuário não encontrado." });
-            }
             return res.status(200).json(usuario);
         } catch (error) {
             return res.status(500).json({ message: "Erro ao buscar usuário por ID", error });
@@ -41,10 +27,6 @@ export namespace UsuarioController {
 
     export const buscarTodosUsuarios = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const usuarioAutenticado = req.user;
-            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
-                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
-            }
             const usuarios = await usuarioService.buscarTodosUsuarios();
             return res.status(200).json(usuarios);
         } catch (error) {
@@ -54,17 +36,9 @@ export namespace UsuarioController {
 
     export const atualizarUsuario = async (req: Request, res: Response): Promise<Response> => {
         try {
-            const usuarioAutenticado = req.user;
-            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
-                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
-            }
-
             const id = parseInt(req.params.id, 10);
             const dadosAtualizados = req.body;
             const usuarioAtualizado = await usuarioService.atualizarUsuario(id, dadosAtualizados);
-            if (!usuarioAtualizado) {
-                return res.status(404).json({ message: "Usuário não encontrado para atualização." });
-            }
             return res.status(200).json(usuarioAtualizado);
         } catch (error) {
             return res.status(500).json({ message: "Erro ao atualizar usuário", error });
@@ -72,12 +46,7 @@ export namespace UsuarioController {
     };
 
     export const deletarUsuario = async (req: Request, res: Response): Promise<Response> => {
-        try {
-            const usuarioAutenticado = req.user;
-            if (!usuarioAutenticado || usuarioAutenticado.roleId !== 1) {
-                return res.status(403).json({ message: "Acesso negado. Apenas administradores podem olhar isso" });
-            }
-            
+        try {        
             const id = parseInt(req.params.id, 10);
             await usuarioService.deletarUsuario(id);
             return res.status(204).send();

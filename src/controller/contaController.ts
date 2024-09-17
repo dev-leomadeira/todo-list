@@ -9,33 +9,28 @@ export namespace ContaController {
 
     export const visualizarConta = async (req: Request, res: Response): Promise<Response> => {
         try {
-            // Verifica se o usuário está autenticado
             const usuarioAutenticado = req.user;
             if (!usuarioAutenticado) {
                 return res.status(401).json({ message: "Usuário não autenticado." });
             }
+            const usuarioId = usuarioAutenticado.id;   // Obtem o ID do usuário autenticado
     
-            // Obtem o ID do usuário autenticado
-            const usuarioId = usuarioAutenticado.id;
-    
-            // Busca o usuário no banco de dados pelo ID
-            const usuario = await contaService.buscarUsuarioPorId(usuarioId);
-            if (!usuario) {
+            const usuario = await contaService.buscarUsuarioPorId(usuarioId); // Busca o usuário no banco de dados pelo ID
+
+            if (!usuario) { 
                 return res.status(404).json({ message: "Usuário não encontrado." });
             }
-    
-            // Retorna os dados do usuário
+
             return res.status(200).json(usuario);
         } catch (error) {
-            console.error("Erro ao visualizar conta:", error);
             return res.status(500).json({ message: "Erro ao visualizar conta", error });
         }
     };
     
     export const atualizarConta = async (req: Request, res: Response): Promise<Response> => {
         try {
-            // Verifica se o usuário está autenticado
-            const usuarioAutenticado = req.user;
+            const usuarioAutenticado = req.user; // Verifica se o usuário está autenticado
+
             if (!usuarioAutenticado) {
                 return res.status(401).json({ message: "Usuário não autenticado." });
             }
@@ -46,17 +41,13 @@ export namespace ContaController {
                 return res.status(400).json({ message: "ID do usuário não encontrado." });
             }
 
-            // Dados atualizados recebidos no corpo da requisição
-            const dadosAtualizados = req.body;
+            const dadosAtualizados = req.body;  // Dados atualizados recebidos no corpo da requisição
 
-            //import bcrypt from 'bcryptjs';
-            //adicionar bcrypt na senha:
             const hash = bcrypt.hashSync(dadosAtualizados.senha, 10);
             dadosAtualizados.senha = hash;
 
-            // Atualiza o usuário
             const usuarioAtualizado = await contaService.atualizarUsuario(usuarioId, dadosAtualizados);
-            if (!usuarioAtualizado) {
+            if (!usuarioAtualizado) { // Atualiza o usuário
                 return res.status(404).json({ message: "Usuário não encontrado para atualização." });
             }
 
@@ -68,14 +59,12 @@ export namespace ContaController {
 
     export const deletarConta = async (req: Request, res: Response): Promise<Response> => {
         try {
-            // Verifica se o usuário está autenticado
-            const usuarioAutenticado = req.user;
+            const usuarioAutenticado = req.user; // Verifica se o usuário está autenticado
             if (!usuarioAutenticado) {
                 return res.status(401).json({ message: "Usuário não autenticado." });
             }
     
-            // Obtém o ID do usuário autenticado
-            const usuarioId = usuarioAutenticado.id;
+            const usuarioId = usuarioAutenticado.id; // Obtém o ID do usuário autenticado
             if (usuarioId === undefined) {
                 return res.status(400).json({ message: "ID do usuário não encontrado." });
             }
@@ -85,8 +74,7 @@ export namespace ContaController {
                 return res.status(403).json({ message: "Voce não pode deletar sua conta :P" });
             }
 
-            // Deleta o usuário
-            const resultado = await contaService.deletarUsuario(usuarioId);
+            const resultado = await contaService.deletarUsuario(usuarioId); // Deleta o usuário
             if (!resultado) {
                 return res.status(404).json({ message: "Usuário não encontrado para deleção." });
             }

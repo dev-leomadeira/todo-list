@@ -2,59 +2,55 @@ import UsuarioRepository from "../../repository/usuarioRepository";
 import { UsuarioService } from "../usuarioService";
 import { UsuarioAtributos, UsuarioAtributosCriacao } from "../../interface/usuario.interface";
 import Usuario from "../../models/usuario.model";
+import bcrypt from "bcryptjs";
 
 class UsuarioServiceImpl implements UsuarioService {
-    public async criarUsuario(usuario: UsuarioAtributosCriacao): Promise<Usuario> {
-        try {
-            const novoUsuario = await UsuarioRepository.criarUsuario(usuario);
-            return novoUsuario;
-        } catch (error) {
-            throw new Error("Erro ao criar usuário.");
-        }
+
+    private usuarioRepository: UsuarioRepository;
+
+    constructor() {
+        this.usuarioRepository = new UsuarioRepository();
     }
 
-    public async buscarUsuarioPorId(id: number): Promise<Usuario | null> {
-        try {
-            const usuario = await UsuarioRepository.buscarUsuarioPorId(id);
-            if (!usuario) {
-                throw new Error("Usuário não encontrado.");
-            }
-            return usuario;
-        } catch (error) {
-            throw new Error("Erro ao buscar usuário por ID.");
-        }
+    async criarUsuario(dadosUsuario: UsuarioAtributosCriacao): Promise<Usuario> {
+        const { nome, email, senha } = dadosUsuario;
+        const senhaCriptografada = await bcrypt.hash(senha, 10);
+        const novoUsuario = await this.usuarioRepository.criarUsuario({
+            nome,
+            email,
+            senha: senhaCriptografada,
+            papelId: 2
+        });
+        return novoUsuario;
     }
 
-    public async buscarTodosUsuarios(): Promise<Usuario[]> {
-        try {
-            return await UsuarioRepository.buscarTodosUsuarios();
-        } catch (error) {
-            throw new Error("Erro ao buscar todos os usuários.");
-        }
+  public async buscarUsuarioPorId(id: number): Promise<Usuario | null> {
+    const usuario = await this.usuarioRepository.buscarUsuarioPorId(id);
+    if (!usuario) {
+      throw new Error("Usuário não encontrado.");
     }
+    return usuario;
+  }
 
-    public async atualizarUsuario(id: number, dadosAtualizados: Partial<UsuarioAtributos>): Promise<Usuario | null> {
-        try {
-            const [linhasAtualizadas, usuariosAtualizados] = await UsuarioRepository.atualizarUsuario(id, dadosAtualizados);
-            if (linhasAtualizadas === 0) {
-                throw new Error("Usuário não encontrado para atualização.");
-            }
-            return usuariosAtualizados[0];
-        } catch (error) {
-            throw new Error("Erro ao atualizar usuário.");
-        }
-    }
+  public async buscarTodosUsuarios(): Promise<Usuario[]> {
+    return await this.usuarioRepository.buscarTodosUsuarios();
+  }
 
-    public async deletarUsuario(id: number): Promise<void> {
-        try {
-            const linhasDeletadas = await UsuarioRepository.deletarUsuario(id);
-            if (linhasDeletadas === 0) {
-                throw new Error("Usuário não encontrado para deleção.");
-            }
-        } catch (error) {
-            throw new Error("Erro ao deletar usuário.");
-        }
+  public async atualizarUsuario(id: number, dadosAtualizados: Partial<UsuarioAtributos>): Promise<Usuario | null> {
+    const [linhasAtualizadas, usuariosAtualizados] =
+      await this.usuarioRepository.atualizarUsuario(id, dadosAtualizados);
+    if (linhasAtualizadas === 0) {
+      throw new Error("Usuário não encontrado para atualização.");
     }
+    return usuariosAtualizados[0];
+  }
+
+  public async deletarUsuario(id: number): Promise<void> {
+    const linhasDeletadas = await this.usuarioRepository.deletarUsuario(id);
+    if (linhasDeletadas === 0) {
+      throw new Error("Usuário não encontrado para deleção.");
+    }
+  }
 }
 
 export default UsuarioServiceImpl;
