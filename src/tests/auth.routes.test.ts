@@ -7,39 +7,41 @@ const app = express();
 app.use(bodyParser.json());
 app.use('/auth', authRouter);
 
-let count = 1;
-
 describe("Teste de rotas de autenticação", () => {
 
     test("Criando novo usuario", async () => {
-        const response = await supertest(app)
+
+        const timestamp = new Date().getTime();
+        const email = `fulano${timestamp}@gmail.com`;
+    
+        const register = await supertest(app)
             .post("/auth/registrar")
             .send({
                 nome: "Fulano",
-                email: `fulano${count}@gmail.com`,
+                email: email,
                 senha: "root",
             });
-
-        expect(response.status).toBe(201);
-        expect(response.body).toHaveProperty("nome", "Fulano");
-        expect(response.body).toHaveProperty("email", `fulano${count}@gmail.com`);
-        expect(response.body).toHaveProperty("papelId", 2);
+    
+        expect(register.status).toBe(201);
+        expect(register.body).toHaveProperty("nome", "Fulano");
+        expect(register.body).toHaveProperty("email", email);
+        expect(register.body).toHaveProperty("papelId", 2);
     });
 
     test("Login de usuário existente", async () => {
-       const response = await supertest(app)
+       const login = await supertest(app)
             .post("/auth/logar")
             .send({
                 email: "admin@gmail.com",
                 senha: "root",
             });
 
-        expect(response.status).toBe(200);
-        expect(response.body).toHaveProperty("token");
-        expect(response.body).toHaveProperty("user");
-        expect(response.body.user).toHaveProperty("email", "admin@gmail.com");
+        expect(login.status).toBe(200);
+        expect(login.body).toHaveProperty("token");
+        expect(login.body).toHaveProperty("user");
+        expect(login.body.user).toHaveProperty("email", "admin@gmail.com");
 
-        const token = response.body.token;
-        console.log(token);
+        // const token = login.body.token;
+        // console.log(token);
     });
 });
