@@ -7,4 +7,4 @@ export interface ListaAtributos{
     usuarioId: number
 }
 
-export interface ListaAtributoCriacao extends Optional<ListaAtributos, 'id'>{}
+export interface ListaAtributoCriacao extends Optional<ListaAtributos, 'id' | 'dataCriacao'>{}

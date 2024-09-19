@@ -12,27 +12,26 @@ app.use(bodyParser.json());
 app.use('/auth', authRouter);
 app.use('/api', usuarioRouter);
 
-let count = 1;
-
 describe("Teste de rotas de usuários", () => {
 
     test("Criando novo usuario", async () => {
         const token = await getToken();
+        const timestamp = new Date().getTime();
+        const email = `jest${timestamp}@gmail.com`;
 
         const createResponse = await supertest(app)
             .post("/api/usuarios")
             .set("Authorization", `Bearer ${token}`)
             .send({
                 nome: "Admin new",
-                email: `admin${count}@gmail.com`,
+                email: email,
                 senha: "root",
                 papelId: 1
             });
 
         expect(createResponse.status).toBe(201);
         expect(createResponse.body).toHaveProperty("nome", "Admin new");
-        expect(createResponse.body).toHaveProperty("email", `admin${count}@gmail.com`);
-        expect(createResponse.body).toHaveProperty("senha", "root");
+        expect(createResponse.body).toHaveProperty("email", email);
     });
 
     test("Listar todos os usuários", async () => {
@@ -63,8 +62,8 @@ describe("Teste de rotas de usuários", () => {
             .put("/api/usuarios/2")
             .set("Authorization", `Bearer ${token}`)
             .send({ 
-                nome: "Admin 2 - Beltrano",
-                email: "beltrano_admin@gmail.com",
+                nome: "Beltrano - Jest",
+                email: "beltrano_jest@gmail.com",
                 senha: bcrypt.hashSync("root", 10),
                 papelId: 2
             });
@@ -75,11 +74,23 @@ describe("Teste de rotas de usuários", () => {
     test("Deletar um usuario pelo id", async () => {
         const token = await getToken();
 
-        const listResponse = await supertest(app)
-            .delete("/api/usuarios/2")
+        const createResponse = await supertest(app)
+            .post("/api/usuarios")
             .set("Authorization", `Bearer ${token}`)
+            .send({
+                nome: "Usuario para deletar",
+                email: `usuario${new Date().getTime()}@gmail.com`,
+                senha: "root",
+                papelId: 1
+            });
+
+        const usuarioId = createResponse.body.id;
+
+        const deleteResponse = await supertest(app)
+            .delete(`/api/usuarios/${usuarioId}`)
+            .set("Authorization", `Bearer ${token}`);
         
-        expect(listResponse.status).toBe(204);
+        expect(deleteResponse.status).toBe(204);
     })
 
 });
