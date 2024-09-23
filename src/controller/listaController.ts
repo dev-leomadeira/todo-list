@@ -45,8 +45,8 @@ export namespace ListaController {
       try {
           const id = parseInt(req.params.id, 10);
           const dadosAtualizados = req.body;
-          const ListaAtualizado = await listaService.atualizarLista(id, dadosAtualizados);
-          return res.status(200).json(ListaAtualizado);
+          const listaAtualizado = await listaService.atualizarLista(id, dadosAtualizados);
+          return res.status(200).json(listaAtualizado);
       } catch (error) {
           return res.status(500).json({ message: "Erro ao atualizar lista", error });
       }
