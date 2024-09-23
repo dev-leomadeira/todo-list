@@ -19,11 +19,15 @@ class ListaServiceImpl implements ListaService {
   }
 
   async atualizarLista(id: number, lista: Partial<ListaAtributos>): Promise<Lista | null> {
-    const existenteLista = await listaRepository.buscarListaPorId(id);
-    if (!existenteLista) {
-      throw new Error("Lista não encontrada");
+    try {
+      const existenteLista = await listaRepository.buscarListaPorId(id);
+      if (!existenteLista) {
+        throw new Error("Lista não encontrada");
+      }
+      return await listaRepository.atualizarLista(id, lista)
+    } catch (error) {
+      throw new Error("Erro ao atualizar pelo service")
     }
-    return await listaRepository.atualizarLista(id, lista)
   }
 
   async deletarLista(id: number): Promise<void> {
