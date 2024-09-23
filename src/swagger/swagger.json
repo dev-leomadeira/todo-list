@@ -291,7 +291,7 @@
                     "example": "Novo Nome da Lista de Tarefas"
                   }
                 },
-                "required": ["novoNome"]
+                "required": ["nome"]
               }
             }
           }
