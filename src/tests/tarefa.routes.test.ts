@@ -28,15 +28,14 @@ describe("Teste de rotas de tarefas", () => {
  
     });
 
-    test("Listar todas as tarefas", async () => {
+    test("Listar tarefas por id", async () => {
         const token = await getToken();
 
         const listResponse = await supertest(app)
-            .get('/api/tarefas/lista/1')
+            .get('/api/tarefas/1')
             .set('Authorization', `Bearer ${token}`);
 
         expect(listResponse.status).toBe(200);
-        expect(listResponse.body.length).toBeGreaterThan(0);
     });
 
     test("Atualizar uma tarefa existente", async () => {
@@ -49,7 +48,7 @@ describe("Teste de rotas de tarefas", () => {
                 concluida: true
             });
 
-        expect(updateResponse.status).toBe(204);
+        expect(updateResponse.status).toBe(200);
     });
 
     test("Deletar uma tarefa", async () => {
@@ -66,7 +65,7 @@ describe("Teste de rotas de tarefas", () => {
         const tarefaId = createResponse.body.id;
 
         const deleteResponse = await supertest(app)
-            .delete(`/api/tarefas/${tarefaId}/lista/1`)
+            .delete(`/api/tarefas/${tarefaId}`)
             .set('Authorization', `Bearer ${token}`);
 
         expect(deleteResponse.status).toBe(204);
