@@ -211,23 +211,22 @@
             }
           }
         }
-      }
-    },
-
-    "/api/listas/usuario": {
+      },
       "get": {
         "tags": ["Lista"],
+        "summary": "Lista todas as listas de tarefas",
+        "description": "Lista todas as listas de tarefas para o usuário autenticado.",
         "security": [{ "bearerAuth": [] }],
-        "summary": "Busca todas as listas do usuário autenticado",
-        "description": "Recupera todas as listas de tarefas do usuário autenticado.",
         "responses": {
           "200": {
-            "description": "Listas recuperadas com sucesso",
+            "description": "Listas listadas com sucesso",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "$ref": "#/components/schemas/Lista"
+                  "items": {
+                    "$ref": "#/components/schemas/Lista"
+                  }
                 }
               }
             }
@@ -237,6 +236,34 @@
     },
 
     "/api/listas/{id}": {
+      "get": {
+        "tags": ["Lista"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca uma lista de tarefas pelo ID",
+        "description": "Recupera uma lista de tarefas pelo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista recuperada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lista"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": ["Lista"],
         "security": [{ "bearerAuth": [] }],
@@ -264,7 +291,7 @@
                     "example": "Novo Nome da Lista de Tarefas"
                   }
                 },
-                "required": ["novoNome"]
+                "required": ["nome"]
               }
             }
           }
@@ -283,7 +310,6 @@
           }
         }
       },
-
       "delete": {
         "tags": ["Lista"],
         "security": [{ "bearerAuth": [] }],
@@ -355,33 +381,19 @@
             }
           }
         }
-      }
-    },
-
-    "/api/tarefas/lista/{listaId}": {
+      },
       "get": {
         "tags": ["Tarefa"],
         "security": [{ "bearerAuth": [] }],
-        "summary": "Busca todas as tarefas em uma lista do usuário",
-        "description": "Recupera todas as tarefas de uma lista do usuário autenticado.",
-        "parameters": [
-          {
-            "name": "listaId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
+        "summary": "Busca uma tarefa pelo ID",
+        "description": "Recupera uma tarefa pelo ID.",
         "responses": {
           "200": {
-            "description": "Tarefas recuperadas com sucesso",
+            "description": "Tarefa recuperada com sucesso",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "$ref": "#/components/schemas/Lista"
+                  "$ref": "#/components/schemas/Tarefa"
                 }
               }
             }
@@ -391,6 +403,34 @@
     },
 
     "/api/tarefas/{id}": {
+      "get": {
+        "tags": ["Tarefa"],
+        "security": [{ "bearerAuth": [] }],
+        "summary": "Busca uma tarefa pelo ID",
+        "description": "Recupera uma tarefa pelo ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tarefa recuperada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tarefa"
+                }
+              }
+            }
+          }
+        }
+      },
       "put": {
         "tags": ["Tarefa"],
         "security": [{ "bearerAuth": [] }],
@@ -440,26 +480,15 @@
             }
           }
         }
-      }
-    },
-
-    "/api/tarefas/{id}/lista/{listaId}": {
+      },
       "delete": {
         "tags": ["Tarefa"],
         "security": [{ "bearerAuth": [] }],
         "summary": "Deleta uma tarefa de uma lista",
-        "description": "Deleta uma tarefa de uma lista existente.",
+        "description": "Deleta uma tarefa existente.",
         "parameters": [
           {
             "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "listaId",
             "in": "path",
             "required": true,
             "schema": {
@@ -507,9 +536,13 @@
                   "nome": {
                     "type": "string",
                     "example": "Beltrano da Silva"
+                  },
+                  "papelId": {
+                    "type": "number",
+                    "example": 2
                   }
                 },
-                "required": ["email", "senha"]
+                "required": ["email", "senha", "papelId"]
               }
             }
           }
@@ -528,7 +561,6 @@
           }
         }
       },
-
       "get": {
         "tags": ["Usuario - Admin"],
         "security": [{ "bearerAuth": [] }],
@@ -665,86 +697,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-
-    "/api/usuario/conta": {
-      "get": {
-        "tags": ["Conta - Usuario"],
-        "summary": "Visualiza a conta do usuário autenticado",
-        "description": "Imprimir as informações da conta do usuário autenticado.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Conta do usuário impressa com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Usuario"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["Conta - Usuario"],
-        "summary": "Atualiza a conta do usuário autenticado",
-        "description": "Atualiza as informações da conta do usuário autenticado.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "type": "string",
-                    "example": "usuario_atualizado@example.com"
-                  },
-                  "nome": {
-                    "type": "string",
-                    "example": "Usuário Atualizado"
-                  },
-                  "senha": {
-                    "type": "string",
-                    "example": "nova_senha123"
-                  }
-                },
-                "required": ["email", "nome"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "204": {
-            "description": "Conta do usuário atualizada com sucesso"
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Conta - Usuario"],
-        "summary": "Deleta a conta do usuário autenticado",
-        "description": "Deleta a conta do usuário autenticado.",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Conta do usuário deletada com sucesso"
           }
         }
       }

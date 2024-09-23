@@ -1,27 +1,39 @@
-import { ListaAtributoCriacao } from "../interface/lista.interface";
+import { ListaAtributoCriacao, ListaAtributos } from "../interface/lista.interface";
 import Lista from "../models/lista.model";
 
 class ListaRepository {
 
-  public async criarLista(dados: ListaAtributoCriacao): Promise<Lista> {
-    dados.dataCriacao = new Date();
-    return Lista.create(dados);
-}
-
-  public async buscarListaPorUsuario(usuarioId: number): Promise<Lista[]> {
-    return await Lista.findAll({ where: { usuarioId } });
+  async criarLista(dados: ListaAtributoCriacao): Promise<Lista> {
+    return await Lista.create(dados);
   }
 
-  public async atualizarLista(id: number, novoNome: string): Promise<void> {
-    const lista = await Lista.findByPk(id);
-    if (lista) {
-      await lista.update({ nome: novoNome, dataCriacao: new Date() });
+  async buscarTodasListas(): Promise<Lista[]> {
+    return await Lista.findAll();
+  }
+
+  async buscarListaPorId(id: number): Promise<Lista | null> {
+    return await Lista.findByPk(id);
+  }
+
+  async atualizarLista(id: number, atualizacoes: Partial<ListaAtributos>): Promise<Lista | null> {
+    try {
+      const existingLista = await this.buscarListaPorId(id);
+      if (!existingLista) {
+        throw new Error("Lista não encontrada.");
+      }
+      return await existingLista.update(atualizacoes);
+    } catch (error) {
+      throw new Error("Erro ao atualizar no db")
     }
   }
 
-  public async deletarLista(id: number, usuarioId: number): Promise<void> {
-    await Lista.destroy({ where: { id, usuarioId } });
+  public async deletarLista(id: number): Promise<void> {
+    const existingLista = await this.buscarListaPorId(id);
+    if (!existingLista) {
+      throw new Error("Lista não encontrada.");
+    }
+    return await existingLista.destroy();
   }
 }
 
-export default ListaRepository;
+export default new ListaRepository();

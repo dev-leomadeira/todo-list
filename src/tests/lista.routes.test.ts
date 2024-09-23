@@ -32,7 +32,7 @@ describe("Testar rotas e CRUD de listas", () => {
 
     // Listar todas as listas
     const listResponse = await supertest(app)
-      .get("/api/listas/usuario")
+      .get("/api/listas")
       .set("Authorization", `Bearer ${token}`);
 
     expect(listResponse.status).toBe(200);
@@ -46,7 +46,7 @@ describe("Testar rotas e CRUD de listas", () => {
       .set("Authorization", `Bearer ${token}`)
       .send({ nome: "Lista Atualizada" });
 
-    expect(updateResponse.status).toBe(204);
+    expect(updateResponse.status).toBe(200);
   });
 
   test("Deletar uma lista", async () => {

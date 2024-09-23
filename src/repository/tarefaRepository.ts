@@ -2,28 +2,33 @@ import { TarefaAtributoCriacao, TarefaAtributos } from "../interface/tarefa.inte
 import Tarefa from "../models/tarefa.model";
 class TarefaRepository {
 
-  public async criarTarefa(dados: TarefaAtributoCriacao): Promise<Tarefa> {
-    return Tarefa.create({ 
-        ...dados, 
-        dataCriacao: new Date(), 
-        concluida: false
-    });
+  async criarTarefa(dados: TarefaAtributoCriacao): Promise<Tarefa> {
+    return await Tarefa.create(dados);
   }
 
-  public async buscarTarefasPorLista(listaId: number): Promise<Tarefa[]> {
-    return await Tarefa.findAll({ where: { listaId } });
+  async buscarTodasTarefas(): Promise<Tarefa[]> {
+    return await Tarefa.findAll();
   }
 
-  public async atualizarTarefa(id: number, atualizacoes: Partial<TarefaAtributos>): Promise<void> {
-    const tarefa = await Tarefa.findByPk(id);
-    if (tarefa) {
-      await tarefa.update(atualizacoes);
+  async buscarTarefaPorId(id: number): Promise<Tarefa | null> {
+    return await Tarefa.findByPk(id);
+  }
+
+  async atualizarTarefa(id: number, atualizacoes: Partial<TarefaAtributos>): Promise<Tarefa | null> {
+    const existingTarefa = await this.buscarTarefaPorId(id);
+    if (!existingTarefa) {
+      throw new Error("Tarefa não encontrada.");
     }
+    return await existingTarefa.update(atualizacoes);
   }
 
-  public async deletarTarefa(id: number, listaId: number): Promise<void> {
-    await Tarefa.destroy({ where: { id, listaId } });
+  public async deletarTarefa(id: number): Promise<void> {
+    const existingTarefa = await this.buscarTarefaPorId(id);
+    if (!existingTarefa) {
+      throw new Error("Tarefa não encontrada.");
+    }
+    return await existingTarefa.destroy();
   }
 }
 
-export default TarefaRepository;
+export default new TarefaRepository();
