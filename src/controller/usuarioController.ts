@@ -1,11 +1,9 @@
 import { Request, Response } from "express";
-import UsuarioServiceImpl from "../services/impl/usuarioServiceImpl";
+import usuarioService from "../services/impl/usuarioServiceImpl";
 import { UsuarioAtributosCriacao } from "../interface/usuario.interface";
 
-const usuarioService = new UsuarioServiceImpl();
-
 export namespace UsuarioController {
-    export const criarUsuario = async (req: Request, res: Response) => {
+    export const criarUsuario = async (req: Request, res: Response): Promise<Response> => {
         try {
             const dadosUsuario: UsuarioAtributosCriacao = req.body;
             const usuario = await usuarioService.criarUsuario(dadosUsuario);

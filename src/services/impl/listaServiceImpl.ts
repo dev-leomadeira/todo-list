@@ -1,48 +1,38 @@
-import { ListaAtributoCriacao } from "../../interface/lista.interface";
+import { ListaAtributoCriacao, ListaAtributos } from "../../interface/lista.interface";
 import Lista from "../../models/lista.model";
-import ListaRepository from "../../repository/listaRepository";
+import listaRepository from "../../repository/listaRepository";
 import { ListaService } from "../listaService";
 
 class ListaServiceImpl implements ListaService {
-  private listaRepository: ListaRepository;
-
-  constructor() {
-    this.listaRepository = new ListaRepository();
-  }
-
-  async criarLista(dadosLista: ListaAtributoCriacao): Promise<Lista> {
-      const { nome, usuarioId } = dadosLista;
-      const novaLista = await this.listaRepository.criarLista({
-          nome,
-          usuarioId,
-          dataCriacao: new Date()
-      });
-      return novaLista;
-  }
-  async buscarListasPorUsuario(usuarioId: number): Promise<Lista[]> {
-    return await this.listaRepository.buscarListaPorUsuario(usuarioId);
-  }
-  async atualizarLista(id: number, novoNome: string, usuarioId: number): Promise<void> {
-    const lista = await Lista.findByPk(id);
-    if (!lista) {
-      throw new Error("Lista não encontrada.");
+  async criarLista(lista: ListaAtributoCriacao): Promise<Lista> {
+    if (!lista.nome) {
+      throw new Error("O nome da lista é obrigatório");
     }
-    if (lista.usuarioId !== usuarioId) {
-        throw new Error("Você não tem permissão para atualizar esta lista.");
-    }
-    await this.listaRepository.atualizarLista(id, novoNome);
+      return await listaRepository.criarLista(lista);
+  }
+  async buscarTodasListas(): Promise<Lista[]> {
+    return await listaRepository.buscarTodasListas();
   }
 
-  async deletarLista(id: number, usuarioId: number): Promise<void> {
-    const lista = await Lista.findByPk(id);
-    if (!lista) {
+  async buscarListaPorId(id: number): Promise<Lista | null>{
+    return await listaRepository.buscarListaPorId(id);
+  }
+
+  async atualizarLista(id: number, lista: Partial<ListaAtributos>): Promise<Lista | null> {
+    const existenteLista = await listaRepository.buscarListaPorId(id);
+    if (!existenteLista) {
       throw new Error("Lista não encontrada");
     }
-    if (lista.usuarioId !== usuarioId) {
-      throw new Error("Você não tem permissão para deletar esta lista");
+    return await listaRepository.atualizarLista(id, lista)
+  }
+
+  async deletarLista(id: number): Promise<void> {
+    const existenteLista = await listaRepository.buscarListaPorId(id);
+    if (!existenteLista) {
+      throw new Error("Lista não encontrada");
     }
-    await this.listaRepository.deletarLista(id, usuarioId);
+    return await listaRepository.deletarLista(id);
   }
 }
 
-export default ListaServiceImpl;
+export default new ListaServiceImpl();
