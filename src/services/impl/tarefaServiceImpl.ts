@@ -1,44 +1,40 @@
-import { TarefaAtributoCriacao } from "../../interface/tarefa.interface";
+import { TarefaAtributoCriacao, TarefaAtributos } from "../../interface/tarefa.interface";
 import Tarefa from "../../models/tarefa.model";
-import TarefaRepository from "../../repository/tarefaRepository";
+import tarefaRepository from "../../repository/tarefaRepository";
 import { TarefaService } from "../tarefaService";
 
 class TarefaServiceImpl implements TarefaService{
-    private tarefaRepository: TarefaRepository;
-
-    constructor() {
-        this.tarefaRepository = new TarefaRepository();
-    }
-
-    async criarTarefa(dados: TarefaAtributoCriacao): Promise<Tarefa> {
-        if (!dados.descricao) {
+    async criarTarefa(tarefa: TarefaAtributoCriacao): Promise<Tarefa> {
+        if (!tarefa.descricao) {
           throw new Error('A descrição é obrigatória');
         }
         
-        return this.tarefaRepository.criarTarefa(dados);
+        return tarefaRepository.criarTarefa(tarefa);
       }
 
-    async buscarTarefasPorLista(listaId: number): Promise<Tarefa[]> {
-        return await this.tarefaRepository.buscarTarefasPorLista(listaId);
+    async buscarTodasTarefas(): Promise<Tarefa[]> {
+        return await tarefaRepository.buscarTodasTarefas();
     }
-    async atualizarTarefa(id: number, descricao: string, concluida: boolean): Promise<void> {
-        return await this.tarefaRepository.atualizarTarefa(id, { descricao, concluida });
+    
+    async buscarTarefaPorId(id: number): Promise<Tarefa | null> {
+        return await tarefaRepository.buscarTarefaPorId(id);
     }
 
-    async deletarTarefa(id: number, listaId: number): Promise<void> {
-        // Verifica se a tarefa existe
-        const tarefa = await Tarefa.findByPk(id);
-        if (!tarefa) {
+    async atualizarTarefa(id: number, tarefa: Partial<TarefaAtributos>): Promise<Tarefa | null> {
+      const existenteTarefa = await tarefaRepository.buscarTarefaPorId(id);
+      if (!existenteTarefa) {
+        throw new Error("Tarefa não encontrada.");
+      }
+      return await existenteTarefa.update(tarefa);
+    }
+
+    async deletarTarefa(id: number): Promise<void> {
+        const existenteTarefa = await tarefaRepository.buscarTarefaPorId(id);
+        if (!existenteTarefa) {
           throw new Error("Tarefa não encontrada.");
-        }
-    
-        // Verifica se a tarefa pertence à lista
-        if (tarefa.listaId !== listaId) {
-          throw new Error("A tarefa não pertence à lista especificada.");
-        }
-    
-        await this.tarefaRepository.deletarTarefa(id, listaId);
+        }      
+        await tarefaRepository.deletarTarefa(id);
       }
 }
 
-export default TarefaServiceImpl;
+export default new TarefaServiceImpl();
