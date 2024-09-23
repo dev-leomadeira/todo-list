@@ -16,11 +16,15 @@ class ListaRepository {
   }
 
   async atualizarLista(id: number, atualizacoes: Partial<ListaAtributos>): Promise<Lista | null> {
-    const existingLista = await this.buscarListaPorId(id);
-    if (!existingLista) {
-      throw new Error("Lista não encontrada.");
+    try {
+      const existingLista = await this.buscarListaPorId(id);
+      if (!existingLista) {
+        throw new Error("Lista não encontrada.");
+      }
+      return await existingLista.update(atualizacoes);
+    } catch (error) {
+      throw new Error("Erro ao atualizar no db")
     }
-    return await existingLista.update(atualizacoes);
   }
 
   public async deletarLista(id: number): Promise<void> {
